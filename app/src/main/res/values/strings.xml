@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">数字极限</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="ClassicMode">经典模式</string>
+    <string name="MaxNumber">最大数</string>
+    <string name="Score">总分</string>
+    <string name="Step">步数</string>
+    <string name="RestStep">剩余步数</string>
+    <string name="Blank">" "</string>
+    <string name="gameActivity">GameActivity</string>
+    <string name="recordActivity">RecordActivity</string>
+    <string name="helpActivity">HelpActivity</string>
+    <string name="aboutusActivity">AboutUsActivity</string>
+    <string name="NumLimit">数字极限</string>
+    <string name="PropMode">道具模式</string>
+    <string name="ChallengeMode">挑战模式</string>
+    <string name="back">返回</string>
+    <string name="chooseMode">模式选择</string>
+
+</resources>

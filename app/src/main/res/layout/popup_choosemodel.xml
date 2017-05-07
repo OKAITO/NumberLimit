@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/mode_choose"
+            android:id="@+id/pop_chooseMode"
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/back_round_up"
+                android:background="#00ffffff"
+                android:id="@+id/back"
+                android:layout_gravity="right"/>
+
+            <ImageView
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/mode_title"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="35dp"
+                android:id="@+id/textView" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:src="@drawable/mode_choose_cut"
+                android:layout_marginBottom="20dp"
+                android:scaleType="fitXY"/>
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:background="@drawable/classic"
+                android:id="@+id/ClassicMode"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_gravity="center_horizontal"
+                android:textSize="28sp"/>
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:background="@drawable/prop"
+                android:text=""
+                android:id="@+id/PropMode"
+                android:layout_marginBottom="15dp"
+                android:layout_gravity="center_horizontal"
+                android:textSize="28sp"/>
+
+            <Button
+                android:layout_width="140dp"
+                android:layout_height="50dp"
+                android:background="@drawable/challenge"
+                android:id="@+id/ChallengeMode"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:textSize="28sp"/>
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+    <!--<Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        android:id="@+id/back"
+        android:textSize="24sp"
+        android:layout_gravity="right"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"/>-->
+
+</LinearLayout>
