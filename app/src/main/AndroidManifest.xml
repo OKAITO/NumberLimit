@@ -14,11 +14,11 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/infinity2"
+        android:icon="@drawable/infinity"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.zhiwu.numberlimit.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -29,22 +29,22 @@
         </activity>
 
         <activity
-        android:name=".activity.GameActivity"
+        android:name="com.zhiwu.numberlimit.activity.GameActivity"
         android:label="@string/gameActivity"
         android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name=".activity.RecordActivity"
+            android:name="com.zhiwu.numberlimit.activity.RecordActivity"
             android:label="@string/recordActivity"
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name=".activity.HelpActivity"
+            android:name="com.zhiwu.numberlimit.activity.HelpActivity"
             android:label="@string/helpActivity"
             android:screenOrientation="portrait"></activity>
 
         <activity
-            android:name=".activity.AboutUsActivity"
+            android:name="com.zhiwu.numberlimit.activity.AboutUsActivity"
             android:label="@string/aboutusActivity"
             android:screenOrientation="portrait"></activity>
 

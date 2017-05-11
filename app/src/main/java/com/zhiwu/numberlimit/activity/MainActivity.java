@@ -1,4 +1,4 @@
-package com.numberlimit.activity;
+package com.zhiwu.numberlimit.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -10,11 +10,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -36,10 +34,10 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.numberlimit.util.HomeWatcher;
+import com.zhiwu.numberlimit.util.HomeWatcher;
 import com.numberlimit.R;
-import com.numberlimit.util.SecuritySharedPreference;
-import com.numberlimit.welcomeview.WelcomeView;
+import com.zhiwu.numberlimit.util.SecuritySharedPreference;
+import com.zhiwu.numberlimit.welcomeview.WelcomeView;
 
 import java.io.Serializable;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.numberlimit.activity;
+package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,10 +13,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.numberlimit.R;
-import com.numberlimit.util.SecuritySharedPreference;
+import com.zhiwu.numberlimit.util.SecuritySharedPreference;
 
 import java.util.HashMap;
 
@@ -78,7 +77,7 @@ public class RecordActivity extends Activity implements View.OnClickListener{
     private TextView challenge7;
 
     private Button back;
-    private Button globalRecord;
+    //private Button globalRecord;
 
     private AudioManager mgr;
     private boolean ifPlaySound;
@@ -216,8 +215,8 @@ public class RecordActivity extends Activity implements View.OnClickListener{
 
         back=(Button)findViewById(R.id.back);
         back.setOnClickListener(this);
-        globalRecord=(Button)findViewById(R.id.globalRecord);
-        globalRecord.setOnClickListener(this);
+//        globalRecord=(Button)findViewById(R.id.globalRecord);
+//        globalRecord.setOnClickListener(this);
 
         //saveData();
         Object[] classic_res=loadData("classic");
@@ -328,11 +327,11 @@ public class RecordActivity extends Activity implements View.OnClickListener{
                 if(ifPlaySound) playSound(2,0);
                 finish();
                 break;
-            case R.id.globalRecord:
-                if(ifPlaySound) playSound(2,0);
-                Toast toast = Toast.makeText(this,"正在开发中，敬请期待",Toast.LENGTH_SHORT);
-                toast.show();
-                break;
+//            case R.id.globalRecord:
+//                if(ifPlaySound) playSound(2,0);
+//                Toast toast = Toast.makeText(this,"正在开发中，敬请期待",Toast.LENGTH_SHORT);
+//                toast.show();
+//                break;
         }
     }
 

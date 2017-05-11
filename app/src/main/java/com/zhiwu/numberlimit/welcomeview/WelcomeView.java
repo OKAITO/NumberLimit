@@ -1,4 +1,4 @@
-package com.numberlimit.welcomeview;
+package com.zhiwu.numberlimit.welcomeview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,7 +14,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.numberlimit.R;
-import com.numberlimit.activity.MainActivity;
+import com.zhiwu.numberlimit.activity.MainActivity;
 
 public class WelcomeView extends SurfaceView
         implements SurfaceHolder.Callback   //实现生命周期回调接口

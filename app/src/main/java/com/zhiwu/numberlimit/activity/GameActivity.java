@@ -1,4 +1,4 @@
-package com.numberlimit.activity;
+package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,11 +24,11 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.numberlimit.gameview.ChallengeModeView;
-import com.numberlimit.gameview.ClassicModeView;
-import com.numberlimit.gameview.PropModeView;
+import com.zhiwu.numberlimit.gameview.ChallengeModeView;
+import com.zhiwu.numberlimit.gameview.ClassicModeView;
+import com.zhiwu.numberlimit.gameview.PropModeView;
 import com.numberlimit.R;
-import com.numberlimit.util.SecuritySharedPreference;
+import com.zhiwu.numberlimit.util.SecuritySharedPreference;
 
 import java.util.HashMap;
 

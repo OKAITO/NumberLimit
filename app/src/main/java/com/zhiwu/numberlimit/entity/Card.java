@@ -1,4 +1,4 @@
-package com.numberlimit.entity;
+package com.zhiwu.numberlimit.entity;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -7,9 +7,9 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 
-import com.numberlimit.gameview.ChallengeModeView;
-import com.numberlimit.gameview.ClassicModeView;
-import com.numberlimit.gameview.PropModeView;
+import com.zhiwu.numberlimit.gameview.ChallengeModeView;
+import com.zhiwu.numberlimit.gameview.ClassicModeView;
+import com.zhiwu.numberlimit.gameview.PropModeView;
 
 public class Card {
 	

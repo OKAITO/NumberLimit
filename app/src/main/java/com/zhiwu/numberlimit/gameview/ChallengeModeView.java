@@ -1,4 +1,4 @@
-package com.numberlimit.gameview;
+package com.zhiwu.numberlimit.gameview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,9 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.numberlimit.entity.Card;
+import com.zhiwu.numberlimit.entity.Card;
 import com.numberlimit.R;
-import com.numberlimit.activity.GameActivity;
+import com.zhiwu.numberlimit.activity.GameActivity;
 
 import java.util.ArrayList;
 import java.util.TreeMap;

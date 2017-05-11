@@ -796,12 +796,13 @@
         android:layout_alignParentStart="true"
         android:layout_marginBottom="30dp">
 
-        <Button
+        <!--<Button
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="15dp"
             android:id="@+id/globalRecord"
-            android:background="@drawable/rank"/>
+            android:background="@drawable/rank"
+            />-->
 
         <TextView
             android:layout_width="0dp"
