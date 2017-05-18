@@ -1,17 +1,24 @@
 package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
+import com.zhiwu.numberlimit.service.MusicService;
 
 import java.util.HashMap;
 
@@ -24,12 +31,42 @@ public class AboutUsActivity extends Activity {
     private SoundPool soundPool;//声音池
     private HashMap<Integer, Integer> soundPoolMap; //声音池中声音ID与自定义声音ID的Map
 
+    private MusicService.MusicBinder musicBinder;
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            System.out.print("init musicBinder");
+            musicBinder=(MusicService.MusicBinder)service;
+            if (musicBinder.getIfPlayMusic()) {
+                musicBinder.startMusic();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    public Handler hd=new Handler(){
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch(msg.what)
+            {
+                case 1:
+                    Intent bindIntent=new Intent(AboutUsActivity.this,MusicService.class);
+                    bindService(bindIntent,connection,BIND_AUTO_CREATE);
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        hd.sendEmptyMessage(1);
         setContentView(R.layout.layout_about_us);
 
         mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
@@ -47,6 +84,41 @@ public class AboutUsActivity extends Activity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+        if(musicBinder==null) System.out.println("musicBinder==null");
+        else {
+            System.out.println("musicBinder!=null");
+            if (musicBinder.getIfPlayMusic()) {
+                if (musicBinder.getIfPause()) {
+                    //mp.start();
+                    musicBinder.startMusic();
+                    //ifPause=false;
+                    musicBinder.setIfPause(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if(musicBinder.getIfPlayMusic()){
+            //mp.pause();
+            //ifPause=true;
+            musicBinder.pauseMusic();
+            musicBinder.setIfPause(true);
+        }
+        super.onPause();
     }
 
     private void initSound(){

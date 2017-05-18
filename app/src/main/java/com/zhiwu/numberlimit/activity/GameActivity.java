@@ -1,7 +1,10 @@
 package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -9,6 +12,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -27,7 +31,8 @@ import android.widget.TextView;
 import com.zhiwu.numberlimit.gameview.ChallengeModeView;
 import com.zhiwu.numberlimit.gameview.ClassicModeView;
 import com.zhiwu.numberlimit.gameview.PropModeView;
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
+import com.zhiwu.numberlimit.service.MusicService;
 import com.zhiwu.numberlimit.util.SecuritySharedPreference;
 
 import java.util.HashMap;
@@ -74,6 +79,35 @@ public class GameActivity extends Activity implements View.OnClickListener{
     private ImageButton pause_retry;
     private ImageButton pause_continue;
 
+    private MusicService.MusicBinder musicBinder;
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            System.out.print("init musicBinder");
+            musicBinder=(MusicService.MusicBinder)service;
+            if (musicBinder.getIfPlayMusic()) {
+                musicBinder.startMusic();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    public Handler hd3=new Handler(){
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch(msg.what)
+            {
+                case 1:
+                    Intent bindIntent=new Intent(GameActivity.this,MusicService.class);
+                    bindService(bindIntent,connection,BIND_AUTO_CREATE);
+                    break;
+            }
+        }
+    };
 
     public Handler hd=new Handler(){
         @Override
@@ -147,6 +181,7 @@ public class GameActivity extends Activity implements View.OnClickListener{
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        hd3.sendEmptyMessage(1);
         mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -174,12 +209,11 @@ public class GameActivity extends Activity implements View.OnClickListener{
         height = dm.heightPixels;
         width = dm.widthPixels;
 
-
     }
 
     private void initSound(){
         //声音池
-        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
+        soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
         //吃东西音乐
         soundPoolMap.put(2, soundPool.load(this, R.raw.button, 1));
@@ -293,6 +327,41 @@ public class GameActivity extends Activity implements View.OnClickListener{
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = bgAlpha; //0.0-1.0:不透明到全透明
         getWindow().setAttributes(lp);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+        if(musicBinder==null) System.out.println("musicBinder==null");
+        else {
+            System.out.println("musicBinder!=null");
+            if (musicBinder.getIfPlayMusic()) {
+                if (musicBinder.getIfPause()) {
+                    //mp.start();
+                    musicBinder.startMusic();
+                    //ifPause=false;
+                    musicBinder.setIfPause(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if(musicBinder.getIfPlayMusic()){
+            //mp.pause();
+            //ifPause=true;
+            musicBinder.pauseMusic();
+            musicBinder.setIfPause(true);
+        }
+        super.onPause();
     }
 
     @Override

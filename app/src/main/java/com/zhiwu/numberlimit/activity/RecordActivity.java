@@ -1,11 +1,20 @@
 package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -14,7 +23,8 @@ import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
+import com.zhiwu.numberlimit.service.MusicService;
 import com.zhiwu.numberlimit.util.SecuritySharedPreference;
 
 import java.util.HashMap;
@@ -79,24 +89,58 @@ public class RecordActivity extends Activity implements View.OnClickListener{
     private Button back;
     //private Button globalRecord;
 
+    private MusicService.MusicBinder musicBinder;
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            System.out.print("init musicBinder");
+            musicBinder=(MusicService.MusicBinder)service;
+            if (musicBinder.getIfPlayMusic()) {
+                musicBinder.startMusic();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    public Handler hd=new Handler(){
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch(msg.what)
+            {
+                case 1:
+                    Intent bindIntent=new Intent(RecordActivity.this,MusicService.class);
+                    bindService(bindIntent,connection,BIND_AUTO_CREATE);
+                    break;
+            }
+        }
+    };
+
     private AudioManager mgr;
     private boolean ifPlaySound;
     private SoundPool soundPool;//声音池
     private HashMap<Integer, Integer> soundPoolMap; //声音池中声音ID与自定义声音ID的Map
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        hd.sendEmptyMessage(1);
         setContentView(R.layout.layout_record);
 
         mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         initSound();
         ifPlaySound=getIntent().getBooleanExtra("ifSound",true);
+
+        //Intent bindIntent=new Intent(RecordActivity.this,MusicService.class);
+        //bindService(bindIntent,connection,BIND_AUTO_CREATE);
 
         tabHost = (TabHost)findViewById(R.id.tabhost);
         tabHost.setup();
@@ -247,16 +291,58 @@ public class RecordActivity extends Activity implements View.OnClickListener{
         challenge_avg_steps.setText(subZeroAndDot(String.valueOf(challenge_res[6])));
 
         tabHost.getTabWidget().getChildAt(0)
-                .setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_classic));;
+                .setBackground(getResources().getDrawable(R.drawable.tab_classic));
         tabHost.getTabWidget().getChildAt(1)
-                .setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_prop));;
+                .setBackground(getResources().getDrawable(R.drawable.tab_prop));
         tabHost.getTabWidget().getChildAt(2)
-                .setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_challenge));;
+                .setBackground(getResources().getDrawable(R.drawable.tab_challenge));
+
 //        updateTab(tabHost);
         for(int i=0;i<3;i++){
             tabHost.getTabWidget().getChildAt(i).setOnClickListener(new MyClickListener(i));
         }
 
+        /*if(ifPlayMusic){
+            System.out.println("play");
+            mp.start();
+            mp.seekTo(position);
+            mp.setLooping(true);
+        }*/
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+        if(musicBinder==null) System.out.println("musicBinder==null");
+        else {
+            System.out.println("musicBinder!=null");
+            if (musicBinder.getIfPlayMusic()) {
+                if (musicBinder.getIfPause()) {
+                    //mp.start();
+                    musicBinder.startMusic();
+                    //ifPause=false;
+                    musicBinder.setIfPause(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if(musicBinder.getIfPlayMusic()){
+            //mp.pause();
+            //ifPause=true;
+            musicBinder.pauseMusic();
+            musicBinder.setIfPause(true);
+        }
+        super.onPause();
     }
 
     class MyClickListener implements View.OnClickListener{
@@ -295,7 +381,7 @@ public class RecordActivity extends Activity implements View.OnClickListener{
     }
 
     private void initSound(){
-        soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 100);
+        soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
         soundPoolMap = new HashMap<Integer, Integer>();
         //soundPoolMap.put(1, soundPool.load(this, R.raw.bgmusic, 1));
         soundPoolMap.put(2, soundPool.load(this, R.raw.button, 1));

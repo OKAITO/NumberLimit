@@ -4,14 +4,17 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -34,8 +37,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.zhiwu.numberlimit.util.HomeWatcher;
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
+import com.zhiwu.numberlimit.service.MusicService;
 import com.zhiwu.numberlimit.util.SecuritySharedPreference;
 import com.zhiwu.numberlimit.welcomeview.WelcomeView;
 
@@ -73,16 +76,31 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	private SoundPool soundPool;//声音池
 	private HashMap<Integer, Integer> soundPoolMap; //声音池中声音ID与自定义声音ID的Map
 
-	private HomeWatcher hw;
-
-	private boolean ifPlayMusic=true;
 	private boolean ifPlaySound=true;
-	private boolean ifPause=false;
+	//private boolean ifPlayMusic=true;
+	//private boolean ifPause=false;
 
-	private MediaPlayer mp;
+	//private MediaPlayer mp;
+	//int position=0;
+	private MusicService.MusicBinder musicBinder;
+	private ServiceConnection connection=new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			System.out.print("init musicBinder");
+			musicBinder=(MusicService.MusicBinder)service;
+			if (musicBinder.getIfPlayMusic()) {
+				musicBinder.startMusic();
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+		}
+	};
 
 	public RelativeLayout relayout = null;
 	DisplayMetrics dm = new DisplayMetrics();
+	float scale=0;
 
 	RelativeLayout.LayoutParams lp =null;
 	ImageView img0=null;
@@ -113,8 +131,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 			int x = (int)((Math.random() * 0.6 + 0.2)* dm.widthPixels);
 			int y = (int)((Math.random() * 0.6 + 0.3)* dm.heightPixels);
 			lp = new RelativeLayout.LayoutParams(-2,-2);
-			lp.width = 75;
-			lp.height = 75;
+			lp.width = dp2px(25.5f);
+			lp.height = dp2px(25.5f);
 			lp.setMargins(x, y, 0, 0);
 			int index = msg.getData().getInt("index");
 			int way = msg.getData().getInt("way");
@@ -194,6 +212,10 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				case 0:
 					goToGameView();
 					break;
+				case 1:
+					Intent bindIntent=new Intent(MainActivity.this,MusicService.class);
+					bindService(bindIntent,connection,BIND_AUTO_CREATE);
+					break;
 			}
 		}
 	};
@@ -203,33 +225,17 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+		System.out.println("create");
 		mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
-		if(mp==null) {
+		/*if(mp==null) {
 			mp=MediaPlayer.create(this, R.raw.bgmusic);
 			mp.setVolume(0.3f,0.3f);
-		}
+		}*/
 
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		initSound();
-
-		hw=new HomeWatcher(this);
-		hw.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
-			@Override
-			public void onHomePressed() {
-				if(ifPlayMusic){
-					mp.pause();
-					ifPause=true;
-					hw.stopWatch();
-				}
-			}
-
-			@Override
-			public void onHomeLongPressed() {
-
-			}
-		});
-
+		hd.sendEmptyMessage(1);
+		System.out.println("bind");
 
 		welcomeView=new WelcomeView(MainActivity.this);
 		goToWelcomeView();
@@ -238,25 +244,42 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	@Override
 	protected void onDestroy() {
 		saveSound();
-		hw.stopWatch();
-		if(mp!=null) {
+		/*if(mp!=null) {
 			mp.stop();
 			mp.release();
-		}
+		}*/
+		musicBinder.stopMusic();
+		unbindService(connection);
 		super.onDestroy();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		hw.startWatch();
 		System.out.println("onResume");
-		if(ifPlayMusic){
-			if(ifPause){
-				mp.start();
-				ifPause=false;
+		if(musicBinder==null) System.out.println("musicBinder==null");
+		else {
+			System.out.println("musicBinder!=null");
+			if (musicBinder.getIfPlayMusic()) {
+				if (musicBinder.getIfPause()) {
+					//mp.start();
+					musicBinder.startMusic();
+					//ifPause=false;
+					musicBinder.setIfPause(false);
+				}
 			}
 		}
+	}
+
+	@Override
+	protected void onPause() {
+		if(musicBinder.getIfPlayMusic()){
+			//mp.pause();
+			//ifPause=true;
+			musicBinder.pauseMusic();
+			musicBinder.setIfPause(true);
+		}
+		super.onPause();
 	}
 
 	private void goToWelcomeView(){
@@ -269,10 +292,13 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 
 		setContentView(R.layout.activity_game);
 		loadSound();
-
-		if(ifPlayMusic){
-			mp.start();
-			mp.setLooping(true);
+		System.out.println("gameview");
+		System.out.println("ifPlayMusic:"+musicBinder.getIfPlayMusic());
+		if(musicBinder.getIfPlayMusic()){
+			//mp.start();
+			//mp.setLooping(true);
+			musicBinder.startMusic();
+			musicBinder.setLoop(true);
 		}
 
 		relayout =(RelativeLayout)findViewById(R.id.abslayout);
@@ -284,6 +310,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		rank.setOnClickListener(this);
 		setting.setOnClickListener(this);
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		scale=dm.density;
 		Random random = new Random();
 		for (int i = 0; i<20; i++){
 			new Thread(new photo(relayout, i, random.nextInt(10) - 5)).start();
@@ -327,7 +354,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	}
 
 	private void initSound(){
-		soundPool = new SoundPool(3, AudioManager.STREAM_MUSIC, 100);
+		soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
 		soundPoolMap = new HashMap<Integer, Integer>();
 		//soundPoolMap.put(1, soundPool.load(this, R.raw.bgmusic, 1));
 		soundPoolMap.put(2, soundPool.load(this, R.raw.button, 1));
@@ -361,6 +388,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				if(ifPlaySound) playSound(2,0);
 				Intent intent = new Intent(MainActivity.this, RecordActivity.class);
 				intent.putExtra("ifSound", ifPlaySound);
+				//intent.putExtra("ifMusic", ifPlayMusic);
 				startActivity(intent);
 			}
 				break;
@@ -403,15 +431,19 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				break;
 			case R.id.setting_music:
 				if(ifPlaySound) playSound(2,0);
-				if(ifPlayMusic){
-					ifPlayMusic=false;
+				if(musicBinder.getIfPlayMusic()){
+					musicBinder.setIfPlayMusic(false);
+					//ifPlayMusic=false;
 					setting_music.setBackgroundResource(R.drawable.btn_music_off);
-					mp.pause();
+					//mp.pause();
+					musicBinder.pauseMusic();
 				}
 				else{
-					ifPlayMusic=true;
+					musicBinder.setIfPlayMusic(true);
+					//ifPlayMusic=true;
 					setting_music.setBackgroundResource(R.drawable.btn_music_on);
-					mp.start();
+					//mp.start();
+					musicBinder.startMusic();
 				}
 				break;
 			case R.id.setting_sound:
@@ -447,14 +479,14 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		SecuritySharedPreference ssp = new SecuritySharedPreference(this, "conf", Context.MODE_PRIVATE);
 		SecuritySharedPreference.SecurityEditor se = ssp.edit();
 		se.putBoolean("sound",ifPlaySound);
-		se.putBoolean("music",ifPlayMusic);
+		se.putBoolean("music",musicBinder.getIfPlayMusic());
 		se.apply();
 	}
 
 	private void loadSound(){
-		System.out.println("load");
 		SecuritySharedPreference ssp = new SecuritySharedPreference(this, "conf", Context.MODE_PRIVATE);
-		ifPlayMusic=ssp.getBoolean("music",true);
+		boolean ifPlayMusic=ssp.getBoolean("music",true);
+		musicBinder.setIfPlayMusic(ifPlayMusic);
 		ifPlaySound=ssp.getBoolean("sound",true);
 	}
 
@@ -496,7 +528,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 			popWindow.setOnDismissListener(new poponDismissListener());
 
 			setting_music = (Button) vPopWindow.findViewById(R.id.setting_music);
-			if(ifPlayMusic) setting_music.setBackgroundResource(R.drawable.btn_music_on);
+			if(musicBinder.getIfPlayMusic()) setting_music.setBackgroundResource(R.drawable.btn_music_on);
 			else setting_music.setBackgroundResource(R.drawable.btn_music_off);
 			setting_music.setOnClickListener(MainActivity.this);
 
@@ -751,6 +783,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		return super.onKeyDown(keyCode, event);
 	}
 
-
+	private int dp2px(float dpValue){
+		return (int)(dpValue*scale+0.5f);
+	}
 
 }

@@ -1,10 +1,17 @@
 package com.zhiwu.numberlimit.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,7 +27,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
+import com.zhiwu.numberlimit.service.MusicService;
 
 import java.util.HashMap;
 
@@ -41,12 +49,42 @@ public class HelpActivity extends Activity implements ViewSwitcher.ViewFactory, 
     private SoundPool soundPool;//声音池
     private HashMap<Integer, Integer> soundPoolMap; //声音池中声音ID与自定义声音ID的Map
 
+    private MusicService.MusicBinder musicBinder;
+    private ServiceConnection connection=new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            System.out.print("init musicBinder");
+            musicBinder=(MusicService.MusicBinder)service;
+            if (musicBinder.getIfPlayMusic()) {
+                musicBinder.startMusic();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+
+    public Handler hd=new Handler(){
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch(msg.what)
+            {
+                case 1:
+                    Intent bindIntent=new Intent(HelpActivity.this,MusicService.class);
+                    bindService(bindIntent,connection,BIND_AUTO_CREATE);
+                    break;
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+        hd.sendEmptyMessage(1);
         setContentView(R.layout.layout_help);
 
         DisplayMetrics dm = new DisplayMetrics();
@@ -58,6 +96,7 @@ public class HelpActivity extends Activity implements ViewSwitcher.ViewFactory, 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         initSound();
         ifPlaySound=getIntent().getBooleanExtra("ifSound",true);
+
 
         imgIds = new int[]{R.drawable.help1,R.drawable.help2,R.drawable.help3,R.drawable.help4,R.drawable.help5,R.drawable.help6,R.drawable.help7,R.drawable.help8,R.drawable.help9};
         //实例化ImageSwitcher
@@ -99,6 +138,41 @@ public class HelpActivity extends Activity implements ViewSwitcher.ViewFactory, 
 
     }
 
+    @Override
+    protected void onDestroy() {
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onResume");
+        if(musicBinder==null) System.out.println("musicBinder==null");
+        else {
+            System.out.println("musicBinder!=null");
+            if (musicBinder.getIfPlayMusic()) {
+                if (musicBinder.getIfPause()) {
+                    //mp.start();
+                    musicBinder.startMusic();
+                    //ifPause=false;
+                    musicBinder.setIfPause(false);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if(musicBinder.getIfPlayMusic()){
+            //mp.pause();
+            //ifPause=true;
+            musicBinder.pauseMusic();
+            musicBinder.setIfPause(true);
+        }
+        super.onPause();
+    }
+
     private void initSound(){
         //声音池
         soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 100);
@@ -135,8 +209,8 @@ public class HelpActivity extends Activity implements ViewSwitcher.ViewFactory, 
     @Override
     public View makeView() {
         final ImageView i = new ImageView(this);
-        i.setBackgroundColor(0xff000000);
-        i.setScaleType(ImageView.ScaleType.FIT_XY);
+        i.setBackgroundColor(0xfff7f3ea);
+        i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         i.setLayoutParams(new ImageSwitcher.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return i ;
     }
@@ -145,16 +219,13 @@ public class HelpActivity extends Activity implements ViewSwitcher.ViewFactory, 
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:{
-                //手指按下的X坐标
                 downX = event.getX();
                 break;
             }
             case MotionEvent.ACTION_UP:{
                 float lastX = event.getX();
-                //抬起的时候的X坐标大于按下的时候就显示上一张图片
                 if(lastX > downX){
                     if(currentPosition > 0){
-                        //设置动画，这里的动画比较简单，不明白的去网上看看相关内容
                         mImageSwitcher.setInAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.left_in));
                         mImageSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.right_out));
                         currentPosition--;

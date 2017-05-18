@@ -13,7 +13,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
 import com.zhiwu.numberlimit.activity.MainActivity;
 
 public class WelcomeView extends SurfaceView

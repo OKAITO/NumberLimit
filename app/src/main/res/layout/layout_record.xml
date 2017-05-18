@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 />
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:src="@drawable/divide"
                 android:layout_marginBottom="10dp"/>

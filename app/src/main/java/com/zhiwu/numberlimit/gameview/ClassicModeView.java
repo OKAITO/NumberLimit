@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.zhiwu.numberlimit.entity.Card;
-import com.numberlimit.R;
+import com.zhiwu.numberlimit.R;
 import com.zhiwu.numberlimit.activity.GameActivity;
 
 import java.util.ArrayList;
@@ -96,47 +96,98 @@ public class ClassicModeView extends View {
         height = metrics.heightPixels;
         width = metrics.widthPixels;
         scale=metrics.density;
+        System.out.println("scale:"+scale);
         fontScale=metrics.scaledDensity;
 
         cardLength=(width-(dimension+1)*20)/dimension;
 
-        ArrayList<Bitmap> tempBitmaps=new ArrayList<Bitmap>();
+        //ArrayList<Bitmap> tempBitmaps=new ArrayList<Bitmap>();
         Bitmap bitmap0= BitmapFactory.decodeResource(getResources(), R.drawable.blank);
-        tempBitmaps.add(bitmap0);
-        Bitmap bitmap1= BitmapFactory.decodeResource(getResources(),R.drawable.game01);
-        tempBitmaps.add(bitmap1);
-        Bitmap bitmap2= BitmapFactory.decodeResource(getResources(),R.drawable.game02);
-        tempBitmaps.add(bitmap2);
-        Bitmap bitmap3= BitmapFactory.decodeResource(getResources(),R.drawable.game03);
-        tempBitmaps.add(bitmap3);
-        Bitmap bitmap4= BitmapFactory.decodeResource(getResources(),R.drawable.game04);
-        tempBitmaps.add(bitmap4);
-        Bitmap bitmap5= BitmapFactory.decodeResource(getResources(),R.drawable.game05);
-        tempBitmaps.add(bitmap5);
-        Bitmap bitmap6= BitmapFactory.decodeResource(getResources(),R.drawable.game06);
-        tempBitmaps.add(bitmap6);
-        Bitmap bitmap7= BitmapFactory.decodeResource(getResources(),R.drawable.game07);
-        tempBitmaps.add(bitmap7);
-        Bitmap bitmap8= BitmapFactory.decodeResource(getResources(),R.drawable.game08);
-        tempBitmaps.add(bitmap8);
-        Bitmap bitmap9= BitmapFactory.decodeResource(getResources(),R.drawable.game09);
-        tempBitmaps.add(bitmap9);
-        Bitmap bitmap10= BitmapFactory.decodeResource(getResources(),R.drawable.game10);
-        tempBitmaps.add(bitmap10);
-        Bitmap bitmap11= BitmapFactory.decodeResource(getResources(),R.drawable.game11);
-        tempBitmaps.add(bitmap11);
-        Bitmap bitmap12= BitmapFactory.decodeResource(getResources(),R.drawable.game12);
-        tempBitmaps.add(bitmap12);
-        Bitmap bitmap13= BitmapFactory.decodeResource(getResources(),R.drawable.game13);
-        tempBitmaps.add(bitmap13);
-        Bitmap bitmap14= BitmapFactory.decodeResource(getResources(),R.drawable.game14);
-        tempBitmaps.add(bitmap14);
-        Bitmap bitmap15= BitmapFactory.decodeResource(getResources(),R.drawable.game15);
-        tempBitmaps.add(bitmap15);
-        Bitmap bitmap16= BitmapFactory.decodeResource(getResources(),R.drawable.next);
-        tempBitmaps.add(bitmap16);
+        Bitmap newBitmap0=resizeCard(bitmap0,cardLength);
+        bitmaps.add(newBitmap0);
+        bitmap0.recycle();
 
-        for(int i=0;i<tempBitmaps.size();i++){
+        Bitmap bitmap1= BitmapFactory.decodeResource(getResources(),R.drawable.game01);
+        Bitmap newBitmap1=resizeCard(bitmap1,cardLength);
+        bitmaps.add(newBitmap1);
+        bitmap1.recycle();
+
+        Bitmap bitmap2= BitmapFactory.decodeResource(getResources(),R.drawable.game02);
+        Bitmap newBitmap2=resizeCard(bitmap2,cardLength);
+        bitmaps.add(newBitmap2);
+        bitmap2.recycle();
+
+        Bitmap bitmap3= BitmapFactory.decodeResource(getResources(),R.drawable.game03);
+        Bitmap newBitmap3=resizeCard(bitmap3,cardLength);
+        bitmaps.add(newBitmap3);
+        bitmap3.recycle();
+
+        Bitmap bitmap4= BitmapFactory.decodeResource(getResources(),R.drawable.game04);
+        Bitmap newBitmap4=resizeCard(bitmap4,cardLength);
+        bitmaps.add(newBitmap4);
+        bitmap4.recycle();
+
+        Bitmap bitmap5= BitmapFactory.decodeResource(getResources(),R.drawable.game05);
+        Bitmap newBitmap5=resizeCard(bitmap5,cardLength);
+        bitmaps.add(newBitmap5);
+        bitmap5.recycle();
+
+        Bitmap bitmap6= BitmapFactory.decodeResource(getResources(),R.drawable.game06);
+        Bitmap newBitmap6=resizeCard(bitmap6,cardLength);
+        bitmaps.add(newBitmap6);
+        bitmap6.recycle();
+
+        Bitmap bitmap7= BitmapFactory.decodeResource(getResources(),R.drawable.game07);
+        Bitmap newBitmap7=resizeCard(bitmap7,cardLength);
+        bitmaps.add(newBitmap7);
+        bitmap7.recycle();
+
+        Bitmap bitmap8= BitmapFactory.decodeResource(getResources(),R.drawable.game08);
+        Bitmap newBitmap8=resizeCard(bitmap8,cardLength);
+        bitmaps.add(newBitmap8);
+        bitmap8.recycle();
+
+        Bitmap bitmap9= BitmapFactory.decodeResource(getResources(),R.drawable.game09);
+        Bitmap newBitmap9=resizeCard(bitmap9,cardLength);
+        bitmaps.add(newBitmap9);
+        bitmap9.recycle();
+
+        Bitmap bitmap10= BitmapFactory.decodeResource(getResources(),R.drawable.game10);
+        Bitmap newBitmap10=resizeCard(bitmap10,cardLength);
+        bitmaps.add(newBitmap10);
+        bitmap10.recycle();
+
+        Bitmap bitmap11= BitmapFactory.decodeResource(getResources(),R.drawable.game11);
+        Bitmap newBitmap11=resizeCard(bitmap11,cardLength);
+        bitmaps.add(newBitmap11);
+        bitmap11.recycle();
+
+        Bitmap bitmap12= BitmapFactory.decodeResource(getResources(),R.drawable.game12);
+        Bitmap newBitmap12=resizeCard(bitmap12,cardLength);
+        bitmaps.add(newBitmap12);
+        bitmap12.recycle();
+
+        Bitmap bitmap13= BitmapFactory.decodeResource(getResources(),R.drawable.game13);
+        Bitmap newBitmap13=resizeCard(bitmap13,cardLength);
+        bitmaps.add(newBitmap13);
+        bitmap13.recycle();
+
+        Bitmap bitmap14= BitmapFactory.decodeResource(getResources(),R.drawable.game14);
+        Bitmap newBitmap14=resizeCard(bitmap14,cardLength);
+        bitmaps.add(newBitmap14);
+        bitmap14.recycle();
+
+        Bitmap bitmap15= BitmapFactory.decodeResource(getResources(),R.drawable.game15);
+        Bitmap newBitmap15=resizeCard(bitmap15,cardLength);
+        bitmaps.add(newBitmap15);
+        bitmap15.recycle();
+
+        Bitmap bitmap16= BitmapFactory.decodeResource(getResources(),R.drawable.next);
+        Bitmap newBitmap16=resizeCard(bitmap16,cardLength);
+        bitmaps.add(newBitmap16);
+        bitmap16.recycle();
+
+        /*for(int i=0;i<tempBitmaps.size();i++){
             int height=tempBitmaps.get(i).getHeight();
             int width=tempBitmaps.get(i).getWidth();
             Matrix matrix=new Matrix();
@@ -144,7 +195,7 @@ public class ClassicModeView extends View {
             matrix.postScale(scaleHeight,scaleHeight);
             Bitmap newBitmap=Bitmap.createBitmap(tempBitmaps.get(i),0,0,width,height,matrix,true);
             bitmaps.add(newBitmap);
-        }
+        }*/
 
         Bitmap tempBgBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.classic_bg);
         int bgHeight=tempBgBitmap.getHeight();
@@ -173,6 +224,16 @@ public class ClassicModeView extends View {
 
     }
 
+    private Bitmap resizeCard(Bitmap srcBitmap,int cardLength){
+        int height=srcBitmap.getHeight();
+        int width=srcBitmap.getWidth();
+        Matrix matrix=new Matrix();
+        float scaleHeight=cardLength*1.0f/height;
+        matrix.postScale(scaleHeight,scaleHeight);
+        Bitmap dstBitmap=Bitmap.createBitmap(srcBitmap,0,0,width,height,matrix,true);
+        return dstBitmap;
+    }
+    
     public Bitmap getBitmap(int num){
         if(num==-1)
             return bitmaps.get(bitmaps.size()-1);
@@ -207,14 +268,13 @@ public class ClassicModeView extends View {
 
         float cardTop=textRectF.bottom+dp2px(20);
         //float chooseCardTop=cardTop+dimension*20+dimension*cardLength;
-        float chooseCardTop=cardTop+dimension*cardLength;
+        float chooseCardTop=cardTop+dimension*cardLength+40;
         chooseCardTop=(chooseCardTop+height)/2-cardLength/2;
         float margin=(width-4*cardLength)/6;
 
         if(ifStart){
             ifStart=false;
             for(int i=0;i<dimension;i++){
-
                 for(int j=0;j<dimension;j++){
                     float left=40+j*10+j*cardLength;
                     float top=cardTop+10*i+i*cardLength;
@@ -499,9 +559,9 @@ public class ClassicModeView extends View {
                             }
                         }
                     }
-                    if(event.getX()>=dp2px(20)-5 && event.getX()<=dp2px(20)+btn_pause.getWidth()+5
-                            && event.getY()>=dp2px(50)+(mode_title.getHeight()*1f)/12-5
-                            && event.getY()<=dp2px(50)+(mode_title.getHeight()*1f)/12+btn_pause.getHeight()+5){
+                    if(event.getX()>=dp2px(30)-10 && event.getX()<=dp2px(30)+btn_pause.getWidth()+10
+                            && event.getY()>=dp2px(50)+(mode_title.getHeight()*1f)/12-10
+                            && event.getY()<=dp2px(50)+(mode_title.getHeight()*1f)/12+btn_pause.getHeight()+10){
                         if(gameActivity.ifPlaySound) gameActivity.playSound(2,0);
                         gameActivity.hd2.sendEmptyMessage(2);
                     }
