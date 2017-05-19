@@ -20,12 +20,10 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("before mp");
         if(mp==null) {
             mp=MediaPlayer.create(this, R.raw.bgmusic);
             mp.setVolume(0.3f,0.3f);
         }
-        System.out.println("after mp");
     }
 
     @Nullable
@@ -35,10 +33,19 @@ public class MusicService extends Service {
     }
 
     public class MusicBinder extends Binder{
-        public void startMusic(){mp.start();}
-        public void pauseMusic(){mp.pause();}
-        public void stopMusic(){mp.stop();mp.release();}
-        public void setLoop(boolean ifLoop){mp.setLooping(ifLoop);}
+        public void startMusic(){
+            try{
+                mp.start();
+            }catch(IllegalStateException e){
+                mp=null;
+                mp=MediaPlayer.create(MusicService.this, R.raw.bgmusic);
+                mp.setVolume(0.3f,0.3f);
+                mp.start();
+            }
+        }
+        public void pauseMusic(){if(mp!=null) mp.pause();}
+        public void stopMusic(){if(mp!=null) mp.stop();mp.release();}
+        public void setLoop(boolean ifLoop){if(mp!=null) mp.setLooping(ifLoop);}
         public boolean getIfPlayMusic(){return ifPlayMusic;}
         public void setIfPlayMusic(boolean ifPlayMusic2){ifPlayMusic=ifPlayMusic2;}
         public boolean getIfPause(){return ifPause;}

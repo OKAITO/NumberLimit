@@ -61,11 +61,11 @@ public class WelcomeView extends SurfaceView
         //绘制黑填充矩形清背景
         paint.setColor(Color.BLACK);//设置画笔颜色
         paint.setAlpha(255);//设置不透明度为255
-        canvas.drawRect(0, 0, width, height, paint);
+        if(canvas!=null) canvas.drawRect(0, 0, width, height, paint);
         //进行平面贴图
         if(showLogo==null)return;
         paint.setAlpha(currentAlpha);
-        canvas.drawBitmap(showLogo, currentX, currentY, paint);
+        if(canvas!=null) canvas.drawBitmap(showLogo, currentX, currentY, paint);
     }
     public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3)
     {
@@ -109,7 +109,6 @@ public class WelcomeView extends SurfaceView
                             e.printStackTrace();
                         }
                     }
-                System.out.println("welcome over");
                 activity.hd.sendEmptyMessage(0);
                 }
 

@@ -452,7 +452,6 @@ public class PropModeView extends View {
 
                 for (int i = 0; i < dimension; i++) {
                     for (int j = 0; j < dimension; j++) {
-                        //System.out.println("i="+i+",j="+j);
                         cards[i][j].drawCard_rotate(this, canvas, endIndex, 2);
                     }
                 }
@@ -484,7 +483,6 @@ public class PropModeView extends View {
                             msg.what=0;
                             msg.obj=msg_res;
                             gameActivity.hd.sendMessage(msg);
-                            System.out.println("view:"+gameActivity);
                         }
                     }
                 }).start();
@@ -552,12 +550,10 @@ public class PropModeView extends View {
                 }
 
                 if (toBeDeletedCards.size() > 0) {
-                    System.out.println("start");
                     for (int i = 0; i < toBeDeletedCards.size(); i++) {
                         Card tempCard = toBeDeletedCards.get(i);
                         if (tempCard.getM() > 0 && cards[tempCard.getM() - 1][tempCard.getN()].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",M>0");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -568,8 +564,7 @@ public class PropModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop(), tempPaint);
                         }
                         if (tempCard.getM() < dimension - 1 && cards[tempCard.getM() + 1][tempCard.getN()].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",M<dim");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -580,8 +575,7 @@ public class PropModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop() + tempHeight * (deleteStep + 1) / 4, tempPaint);
                         }
                         if (tempCard.getN() > 0 && cards[tempCard.getM()][tempCard.getN() - 1].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",N>0");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -592,8 +586,7 @@ public class PropModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop(), tempPaint);
                         }
                         if (tempCard.getN() < dimension - 1 && cards[tempCard.getM()][tempCard.getN() + 1].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",N<dim");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -611,7 +604,6 @@ public class PropModeView extends View {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("thread1");
                             if (toBeDeletedCards.size() > 0) {
                                 deleteStep++;
                                 if (deleteStep == 3) {
@@ -628,7 +620,6 @@ public class PropModeView extends View {
                                 postInvalidate();
                             } else {
                                 if (deleteMaxNum > 1) {
-                                    System.out.println("thread2");
                                     for (int i = 0; i < toBeChangedCards.size(); i++) {
                                         if (toBeChangedCards.get(i).getDeleteNum() == deleteMaxNum) {
                                             //toBeChangedCards.get(i).setDeleteNum(0);
@@ -645,7 +636,6 @@ public class PropModeView extends View {
                                     }
                                     postInvalidate();
                                 } else {
-                                    System.out.println("thread3");
                                     Card tempCard = null;
                                     for (int i = 0; i < toBeChangedCards.size(); i++) {
                                         if (toBeChangedCards.get(i).getDeleteNum() == deleteMaxNum) {
@@ -677,7 +667,6 @@ public class PropModeView extends View {
                     }).start();
                 }
                 setOnTouchListener(new PropModeView.touchAction());
-                System.out.println("choosedMaxNum:" + choosedMaxNum);
             }
         }
 
@@ -727,7 +716,7 @@ public class PropModeView extends View {
                 case MotionEvent.ACTION_UP:
                     if (chooseCard != null) {
                         if (chooseCard.getNum() > 0 || (chooseCard.getNum()>=-7 && chooseCard.getNum()<=-5)) {
-                            System.out.println("freeCards.size:" + freeCards.size());
+
                             for (int i = 0; i < freeCards.size(); i++) {
                                 if (freeCards.get(i).ifIntersect(chooseCard) && freeCards.get(i).getNum() == 0) {
 
@@ -743,7 +732,6 @@ public class PropModeView extends View {
                                             nextNum = tempRes;
                                         } else break;
                                     } else if (nextNum == -7) {
-                                        System.out.println("before send");
                                         pointCard=freeCards.get(i);
                                         pointIndex=chooseIndex;
                                         //gameActivity.hd.sendEmptyMessage(1);
@@ -752,9 +740,6 @@ public class PropModeView extends View {
                                         msg.obj=choosedMaxNum;
                                         gameActivity.hd2.sendMessage(msg);
                                         break;
-                                        //System.out.println("after send");
-                                        //nextNum = writenum;
-                                        //System.out.println("nextNum="+nextNum);
                                     }
                                     else{
                                         if(gameActivity.ifPlaySound) gameActivity.playSound(3,0);
@@ -1096,13 +1081,8 @@ public class PropModeView extends View {
         if(start==end) return -1;
         long time=System.currentTimeMillis();
         time%=10000;
-        //System.out.println("currentTime:"+time);
         double rand=Math.random();
-        //System.out.println("rand:"+rand);
-        //System.out.println("randomSeed1:"+randomSeed);
         randomSeed=(int)(time*rand*randomSeed)%10000;
-        //System.out.println("randomSeed2:"+randomSeed);
-        //System.out.println("result:"+(start+randomSeed%(end-start)));
         return start+randomSeed%(end-start);
     }
 

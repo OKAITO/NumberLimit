@@ -96,7 +96,6 @@ public class ClassicModeView extends View {
         height = metrics.heightPixels;
         width = metrics.widthPixels;
         scale=metrics.density;
-        System.out.println("scale:"+scale);
         fontScale=metrics.scaledDensity;
 
         cardLength=(width-(dimension+1)*20)/dimension;
@@ -321,10 +320,8 @@ public class ClassicModeView extends View {
 
             if (ifEnd == 2) {
 
-                //System.out.println("ifEnd=2");
                 for (int i = 0; i < dimension; i++) {
                     for (int j = 0; j < dimension; j++) {
-                        //System.out.println("i="+i+",j="+j);
                         cards[i][j].drawCard_rotate(this, canvas, endIndex, 1);
                     }
                 }
@@ -356,7 +353,6 @@ public class ClassicModeView extends View {
                                 msg.what=0;
                                 msg.obj=msg_res;
                                 gameActivity.hd.sendMessage(msg);
-                                System.out.println("view:"+gameActivity);
                             }
                         }
                     }).start();
@@ -393,12 +389,10 @@ public class ClassicModeView extends View {
                 }
 
                 if (toBeDeletedCards.size() > 0) {
-                    System.out.println("start");
                     for (int i = 0; i < toBeDeletedCards.size(); i++) {
                         Card tempCard = toBeDeletedCards.get(i);
                         if (tempCard.getM() > 0 && cards[tempCard.getM() - 1][tempCard.getN()].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",M>0");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -409,8 +403,7 @@ public class ClassicModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop(), tempPaint);
                         }
                         if (tempCard.getM() < dimension - 1 && cards[tempCard.getM() + 1][tempCard.getN()].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",M<dim");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -421,8 +414,7 @@ public class ClassicModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop() + tempHeight * (deleteStep + 1) / 4, tempPaint);
                         }
                         if (tempCard.getN() > 0 && cards[tempCard.getM()][tempCard.getN() - 1].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",N>0");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -433,8 +425,7 @@ public class ClassicModeView extends View {
                             canvas.drawBitmap(tempBitmap2, tempCard.getLeft(), tempCard.getTop(), tempPaint);
                         }
                         if (tempCard.getN() < dimension - 1 && cards[tempCard.getM()][tempCard.getN() + 1].getDeleteNum() == tempCard.getDeleteNum() - 1) {
-                            System.out.println("i=" + i + ",N<dim");
-                            System.out.println("step=" + deleteStep);
+
                             Paint tempPaint = new Paint();
                             tempPaint.setAntiAlias(true);
                             tempPaint.setAlpha(128);
@@ -451,7 +442,6 @@ public class ClassicModeView extends View {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("thread1");
                             if (toBeDeletedCards.size() > 0) {
                                 deleteStep++;
                                 if (deleteStep == 3) {
@@ -468,7 +458,6 @@ public class ClassicModeView extends View {
                                 postInvalidate();
                             } else {
                                 if (deleteMaxNum > 1) {
-                                    System.out.println("thread2");
                                     for (int i = 0; i < toBeChangedCards.size(); i++) {
                                         if (toBeChangedCards.get(i).getDeleteNum() == deleteMaxNum) {
                                             //toBeChangedCards.get(i).setDeleteNum(0);
@@ -486,7 +475,6 @@ public class ClassicModeView extends View {
                                     }
                                     postInvalidate();
                                 } else {
-                                    System.out.println("thread3");
                                     Card tempCard = null;
                                     for (int i = 0; i < toBeChangedCards.size(); i++) {
                                         if (toBeChangedCards.get(i).getDeleteNum() == deleteMaxNum) {
@@ -544,16 +532,13 @@ public class ClassicModeView extends View {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (chooseCard == null) {
-                        //System.out.println("action_choose");
                         for (int i = 0; i < 3; i++) {
                             if (chooseCards[i].ifChoose(event.getX(), event.getY())) {
                                 if(gameActivity.ifPlaySound) gameActivity.playSound(2,0);
                                 chooseCard = new Card(chooseCards[i].getLeft(), chooseCards[i].getTop(), cardLength, chooseCards[i].getNum());
                                 chooseIndex = i;
                                 x_dif = event.getX() - chooseCard.getLeft();
-                                //System.out.println("x_dif:"+x_dif+"");
                                 y_dif = event.getY() - chooseCard.getTop();
-                                //System.out.println("y_dif:"+y_dif+"");
                                 ifMove = true;
                                 break;
                             }
@@ -571,16 +556,13 @@ public class ClassicModeView extends View {
                         current_x = event.getX();
                         current_y = event.getY();
                         invalidate();
-                        //System.out.println("move");
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (chooseCard != null) {
-                        System.out.println("freeCards.size:" + freeCards.size());
                         for (int i = 0; i < freeCards.size(); i++) {
                             if (freeCards.get(i).ifIntersect(chooseCard) && freeCards.get(i).getNum() == 0) {
                                 if(gameActivity.ifPlaySound) gameActivity.playSound(3,0);
-                                System.out.println("intersect:" + chooseCard.getNum());
                                 freeCards.get(i).setNum(chooseCard.getNum());
                                 changeNext(chooseIndex);
                                 toBeChangedCards.clear();
@@ -629,13 +611,8 @@ public class ClassicModeView extends View {
         if(start==end) return -1;
         long time=System.currentTimeMillis();
         time%=10000;
-        //System.out.println("currentTime:"+time);
         double rand=Math.random();
-        //System.out.println("rand:"+rand);
-        //System.out.println("randomSeed1:"+randomSeed);
         randomSeed=(int)(time*rand*randomSeed)%10000;
-        //System.out.println("randomSeed2:"+randomSeed);
-        //System.out.println("result:"+(start+randomSeed%(end-start)));
         return start+randomSeed%(end-start);
     }
 

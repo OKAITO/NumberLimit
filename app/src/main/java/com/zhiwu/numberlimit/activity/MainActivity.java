@@ -86,9 +86,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	private ServiceConnection connection=new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			System.out.print("init musicBinder");
 			musicBinder=(MusicService.MusicBinder)service;
-			if (musicBinder.getIfPlayMusic()) {
+			if (musicBinder!=null && musicBinder.getIfPlayMusic()) {
 				musicBinder.startMusic();
 			}
 		}
@@ -225,7 +224,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		System.out.println("create");
+
 		mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
 		/*if(mp==null) {
 			mp=MediaPlayer.create(this, R.raw.bgmusic);
@@ -235,7 +234,6 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);
 		initSound();
 		hd.sendEmptyMessage(1);
-		System.out.println("bind");
 
 		welcomeView=new WelcomeView(MainActivity.this);
 		goToWelcomeView();
@@ -248,7 +246,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 			mp.stop();
 			mp.release();
 		}*/
-		musicBinder.stopMusic();
+		if(musicBinder!=null)
+			musicBinder.stopMusic();
 		unbindService(connection);
 		super.onDestroy();
 	}
@@ -256,10 +255,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	@Override
 	protected void onResume() {
 		super.onResume();
-		System.out.println("onResume");
-		if(musicBinder==null) System.out.println("musicBinder==null");
-		else {
-			System.out.println("musicBinder!=null");
+		if(musicBinder!=null) {
 			if (musicBinder.getIfPlayMusic()) {
 				if (musicBinder.getIfPause()) {
 					//mp.start();
@@ -273,7 +269,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 
 	@Override
 	protected void onPause() {
-		if(musicBinder.getIfPlayMusic()){
+		if(musicBinder!=null && musicBinder.getIfPlayMusic()){
 			//mp.pause();
 			//ifPause=true;
 			musicBinder.pauseMusic();
@@ -292,9 +288,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 
 		setContentView(R.layout.activity_game);
 		loadSound();
-		System.out.println("gameview");
-		System.out.println("ifPlayMusic:"+musicBinder.getIfPlayMusic());
-		if(musicBinder.getIfPlayMusic()){
+		if(musicBinder!=null && musicBinder.getIfPlayMusic()){
 			//mp.start();
 			//mp.setLooping(true);
 			musicBinder.startMusic();
@@ -358,7 +352,6 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		soundPoolMap = new HashMap<Integer, Integer>();
 		//soundPoolMap.put(1, soundPool.load(this, R.raw.bgmusic, 1));
 		soundPoolMap.put(2, soundPool.load(this, R.raw.button, 1));
-		System.out.println("init");
 	}
 
 	//播放声音
@@ -366,8 +359,6 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
 		float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 		float volume = streamVolumeCurrent / streamVolumeMax;
-		System.out.println("play:"+soundPoolMap.containsKey(5)+","+soundPoolMap.toString());
-		System.out.println("sound:"+sound);
 		soundPool.play(soundPoolMap.get(sound), volume, volume, 1, loop, 1);
 	}
 
@@ -431,19 +422,20 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				break;
 			case R.id.setting_music:
 				if(ifPlaySound) playSound(2,0);
-				if(musicBinder.getIfPlayMusic()){
-					musicBinder.setIfPlayMusic(false);
-					//ifPlayMusic=false;
-					setting_music.setBackgroundResource(R.drawable.btn_music_off);
-					//mp.pause();
-					musicBinder.pauseMusic();
-				}
-				else{
-					musicBinder.setIfPlayMusic(true);
-					//ifPlayMusic=true;
-					setting_music.setBackgroundResource(R.drawable.btn_music_on);
-					//mp.start();
-					musicBinder.startMusic();
+				if(musicBinder!=null) {
+					if (musicBinder.getIfPlayMusic()) {
+						musicBinder.setIfPlayMusic(false);
+						//ifPlayMusic=false;
+						setting_music.setBackgroundResource(R.drawable.btn_music_off);
+						//mp.pause();
+						musicBinder.pauseMusic();
+					} else {
+						musicBinder.setIfPlayMusic(true);
+						//ifPlayMusic=true;
+						setting_music.setBackgroundResource(R.drawable.btn_music_on);
+						//mp.start();
+						musicBinder.startMusic();
+					}
 				}
 				break;
 			case R.id.setting_sound:
@@ -475,18 +467,18 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	}
 
 	private void saveSound(){
-		System.out.println("save");
 		SecuritySharedPreference ssp = new SecuritySharedPreference(this, "conf", Context.MODE_PRIVATE);
 		SecuritySharedPreference.SecurityEditor se = ssp.edit();
 		se.putBoolean("sound",ifPlaySound);
-		se.putBoolean("music",musicBinder.getIfPlayMusic());
+		if(musicBinder!=null) se.putBoolean("music",musicBinder.getIfPlayMusic());
+		else se.putBoolean("music",true);
 		se.apply();
 	}
 
 	private void loadSound(){
 		SecuritySharedPreference ssp = new SecuritySharedPreference(this, "conf", Context.MODE_PRIVATE);
 		boolean ifPlayMusic=ssp.getBoolean("music",true);
-		musicBinder.setIfPlayMusic(ifPlayMusic);
+		if(musicBinder!=null) musicBinder.setIfPlayMusic(ifPlayMusic);
 		ifPlaySound=ssp.getBoolean("sound",true);
 	}
 
@@ -528,8 +520,12 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 			popWindow.setOnDismissListener(new poponDismissListener());
 
 			setting_music = (Button) vPopWindow.findViewById(R.id.setting_music);
-			if(musicBinder.getIfPlayMusic()) setting_music.setBackgroundResource(R.drawable.btn_music_on);
-			else setting_music.setBackgroundResource(R.drawable.btn_music_off);
+			if(musicBinder!=null) {
+				if (musicBinder.getIfPlayMusic())
+					setting_music.setBackgroundResource(R.drawable.btn_music_on);
+				else setting_music.setBackgroundResource(R.drawable.btn_music_off);
+			}
+			else setting_music.setBackgroundResource(R.drawable.btn_music_on);
 			setting_music.setOnClickListener(MainActivity.this);
 
 			setting_sound = (Button) vPopWindow.findViewById(R.id.setting_sound);

@@ -83,9 +83,8 @@ public class GameActivity extends Activity implements View.OnClickListener{
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            System.out.print("init musicBinder");
             musicBinder=(MusicService.MusicBinder)service;
-            if (musicBinder.getIfPlayMusic()) {
+            if (musicBinder!=null && musicBinder.getIfPlayMusic()) {
                 musicBinder.startMusic();
             }
         }
@@ -190,7 +189,6 @@ public class GameActivity extends Activity implements View.OnClickListener{
         mode=getIntent().getIntExtra("mode",1);
         ifPlaySound=getIntent().getBooleanExtra("ifSound",true);
 
-        System.out.println("act;"+this);
         if(mode==1) {
             view = new ClassicModeView(this);
             setContentView(view);
@@ -224,7 +222,6 @@ public class GameActivity extends Activity implements View.OnClickListener{
         soundPoolMap.put(7, soundPool.load(this, R.raw.merge, 1));
         soundPoolMap.put(8, soundPool.load(this, R.raw.gameover, 1));
 
-        System.out.println("init");
         //soundPoolMap.put(2, soundPool.load(this, R.raw.dong, 1)); //玩家走棋
         //soundPoolMap.put(4, soundPool.load(this, R.raw.win, 1)); //赢了
         //soundPoolMap.put(5, soundPool.load(this, R.raw.loss, 1)); //输了
@@ -235,8 +232,6 @@ public class GameActivity extends Activity implements View.OnClickListener{
         float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
         float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = streamVolumeCurrent / streamVolumeMax;
-        System.out.println("play:"+soundPoolMap.containsKey(5)+","+soundPoolMap.toString());
-        System.out.println("sound:"+sound);
         if(sound==2)
             soundPool.play(soundPoolMap.get(sound), volume, volume, 1, loop, 1f);
         else
@@ -257,7 +252,6 @@ public class GameActivity extends Activity implements View.OnClickListener{
 
     public void showPopWindow(Context context, View parent, int sign)
     {
-        System.out.println("popup");
         LayoutInflater inflater=LayoutInflater.from(context);
         View vPopWindow=null;
         PopupWindow popWindow=null;
@@ -338,10 +332,7 @@ public class GameActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("onResume");
-        if(musicBinder==null) System.out.println("musicBinder==null");
-        else {
-            System.out.println("musicBinder!=null");
+        if(musicBinder!=null) {
             if (musicBinder.getIfPlayMusic()) {
                 if (musicBinder.getIfPause()) {
                     //mp.start();
@@ -355,7 +346,7 @@ public class GameActivity extends Activity implements View.OnClickListener{
 
     @Override
     protected void onPause() {
-        if(musicBinder.getIfPlayMusic()){
+        if(musicBinder!=null && musicBinder.getIfPlayMusic()){
             //mp.pause();
             //ifPause=true;
             musicBinder.pauseMusic();
@@ -387,7 +378,6 @@ public class GameActivity extends Activity implements View.OnClickListener{
             case R.id.gameover_back:
             case R.id.pause_quit:
                 if(ifPlaySound) playSound(2,0);
-                System.out.println("back");
                 p.dismiss();
                 finish();
                 break;

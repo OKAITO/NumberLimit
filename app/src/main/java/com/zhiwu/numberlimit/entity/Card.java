@@ -185,7 +185,6 @@ public class Card {
 			scaleWidth=1-(1/4f*(index-8))/4f*2;
 		else
 			scaleWidth=1-(1/4f*(16-index))/4f*2;
-		System.out.println("index="+index+",scaleWidth="+scaleWidth);
 		matrix.postScale(scaleWidth,scaleHeight);
 
 		Bitmap newBitmap=Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);

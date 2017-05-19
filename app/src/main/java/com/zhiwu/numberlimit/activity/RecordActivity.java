@@ -93,9 +93,8 @@ public class RecordActivity extends Activity implements View.OnClickListener{
     private ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            System.out.print("init musicBinder");
             musicBinder=(MusicService.MusicBinder)service;
-            if (musicBinder.getIfPlayMusic()) {
+            if (musicBinder!=null && musicBinder.getIfPlayMusic()) {
                 musicBinder.startMusic();
             }
         }
@@ -302,12 +301,6 @@ public class RecordActivity extends Activity implements View.OnClickListener{
             tabHost.getTabWidget().getChildAt(i).setOnClickListener(new MyClickListener(i));
         }
 
-        /*if(ifPlayMusic){
-            System.out.println("play");
-            mp.start();
-            mp.seekTo(position);
-            mp.setLooping(true);
-        }*/
     }
 
     @Override
@@ -319,10 +312,7 @@ public class RecordActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("onResume");
-        if(musicBinder==null) System.out.println("musicBinder==null");
-        else {
-            System.out.println("musicBinder!=null");
+        if(musicBinder!=null) {
             if (musicBinder.getIfPlayMusic()) {
                 if (musicBinder.getIfPause()) {
                     //mp.start();
@@ -336,7 +326,7 @@ public class RecordActivity extends Activity implements View.OnClickListener{
 
     @Override
     protected void onPause() {
-        if(musicBinder.getIfPlayMusic()){
+        if(musicBinder!=null && musicBinder.getIfPlayMusic()){
             //mp.pause();
             //ifPause=true;
             musicBinder.pauseMusic();
@@ -361,8 +351,6 @@ public class RecordActivity extends Activity implements View.OnClickListener{
         float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
         float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = streamVolumeCurrent / streamVolumeMax;
-        System.out.println("play:"+soundPoolMap.containsKey(5)+","+soundPoolMap.toString());
-        System.out.println("sound:"+sound);
         soundPool.play(soundPoolMap.get(sound), volume, volume, 1, loop, 1);
     }
 
@@ -386,7 +374,6 @@ public class RecordActivity extends Activity implements View.OnClickListener{
         //soundPoolMap.put(1, soundPool.load(this, R.raw.bgmusic, 1));
         soundPoolMap.put(2, soundPool.load(this, R.raw.button, 1));
         soundPoolMap.put(3, soundPool.load(this, R.raw.put, 1));
-        System.out.println("init");
     }
 
     private Object[] loadData(String fileName){
