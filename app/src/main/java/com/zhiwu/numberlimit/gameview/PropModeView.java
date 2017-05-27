@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -106,60 +109,6 @@ public class PropModeView extends View {
         fontScale=metrics.scaledDensity;
 
         cardLength=(width-(dimension+1)*20)/dimension;
-
-        //ArrayList<Bitmap> tempBitmaps=new ArrayList<Bitmap>();
-        /*Bitmap bitmap0= BitmapFactory.decodeResource(getResources(), R.drawable.blank);
-        tempBitmaps.add(bitmap0);
-        Bitmap bitmap1= BitmapFactory.decodeResource(getResources(),R.drawable.game01);
-        tempBitmaps.add(bitmap1);
-        Bitmap bitmap2= BitmapFactory.decodeResource(getResources(),R.drawable.game02);
-        tempBitmaps.add(bitmap2);
-        Bitmap bitmap3= BitmapFactory.decodeResource(getResources(),R.drawable.game03);
-        tempBitmaps.add(bitmap3);
-        Bitmap bitmap4= BitmapFactory.decodeResource(getResources(),R.drawable.game04);
-        tempBitmaps.add(bitmap4);
-        Bitmap bitmap5= BitmapFactory.decodeResource(getResources(),R.drawable.game05);
-        tempBitmaps.add(bitmap5);
-        Bitmap bitmap6= BitmapFactory.decodeResource(getResources(),R.drawable.game06);
-        tempBitmaps.add(bitmap6);
-        Bitmap bitmap7= BitmapFactory.decodeResource(getResources(),R.drawable.game07);
-        tempBitmaps.add(bitmap7);
-        Bitmap bitmap8= BitmapFactory.decodeResource(getResources(),R.drawable.game08);
-        tempBitmaps.add(bitmap8);
-        Bitmap bitmap9= BitmapFactory.decodeResource(getResources(),R.drawable.game09);
-        tempBitmaps.add(bitmap9);
-        Bitmap bitmap10= BitmapFactory.decodeResource(getResources(),R.drawable.game10);
-        tempBitmaps.add(bitmap10);
-        Bitmap bitmap26= BitmapFactory.decodeResource(getResources(),R.drawable.game11);
-        tempBitmaps.add(bitmap26);
-        Bitmap bitmap27= BitmapFactory.decodeResource(getResources(),R.drawable.game12);
-        tempBitmaps.add(bitmap27);
-        Bitmap bitmap28= BitmapFactory.decodeResource(getResources(),R.drawable.game13);
-        tempBitmaps.add(bitmap28);
-        Bitmap bitmap24= BitmapFactory.decodeResource(getResources(),R.drawable.game14);
-        tempBitmaps.add(bitmap24);
-        Bitmap bitmap25= BitmapFactory.decodeResource(getResources(),R.drawable.game15);
-        tempBitmaps.add(bitmap25);
-        Bitmap bitmap11= BitmapFactory.decodeResource(getResources(),R.drawable.obstacle3);
-        tempBitmaps.add(bitmap11);
-        Bitmap bitmap12= BitmapFactory.decodeResource(getResources(),R.drawable.obstacle2);
-        tempBitmaps.add(bitmap12);
-        Bitmap bitmap13= BitmapFactory.decodeResource(getResources(),R.drawable.obstacle1);
-        tempBitmaps.add(bitmap13);
-        Bitmap bitmap14= BitmapFactory.decodeResource(getResources(),R.drawable.point);
-        tempBitmaps.add(bitmap14);
-        Bitmap bitmap15= BitmapFactory.decodeResource(getResources(),R.drawable.vortex);
-        tempBitmaps.add(bitmap15);
-        Bitmap bitmap16= BitmapFactory.decodeResource(getResources(),R.drawable.random);
-        tempBitmaps.add(bitmap16);
-        Bitmap bitmap17= BitmapFactory.decodeResource(getResources(),R.drawable.bomb);
-        tempBitmaps.add(bitmap17);
-        Bitmap bitmap18= BitmapFactory.decodeResource(getResources(),R.drawable.down);
-        tempBitmaps.add(bitmap18);
-        Bitmap bitmap19= BitmapFactory.decodeResource(getResources(),R.drawable.up);
-        tempBitmaps.add(bitmap19);
-        Bitmap bitmap20= BitmapFactory.decodeResource(getResources(),R.drawable.next);
-        tempBitmaps.add(bitmap20);*/
 
         Bitmap bitmap0= BitmapFactory.decodeResource(getResources(), R.drawable.blank);
         Bitmap newBitmap0=resizeCard(bitmap0,cardLength);
@@ -291,16 +240,6 @@ public class PropModeView extends View {
         bitmaps.add(newBitmap20);
         bitmap20.recycle();
 
-        /*for(int i=0;i<tempBitmaps.size();i++){
-            int height=tempBitmaps.get(i).getHeight();
-            int width=tempBitmaps.get(i).getWidth();
-            Matrix matrix=new Matrix();
-            float scaleHeight=cardLength*1.0f/height;
-            matrix.postScale(scaleHeight,scaleHeight);
-            Bitmap newBitmap=Bitmap.createBitmap(tempBitmaps.get(i),0,0,width,height,matrix,true);
-            bitmaps.add(newBitmap);
-        }*/
-
         ArrayList<Bitmap> tempBitmaps2=new ArrayList<Bitmap>();
         Bitmap bitmap21= BitmapFactory.decodeResource(getResources(),R.drawable.proptime1);
         tempBitmaps2.add(bitmap21);
@@ -320,14 +259,6 @@ public class PropModeView extends View {
             proptimeBitmaps.add(newBitmap);
         }
 
-        Bitmap tempBgBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.prop_bg);
-        int bgHeight=tempBgBitmap.getHeight();
-        int bgWidth=tempBgBitmap.getWidth();
-        Matrix bgMatrix=new Matrix();
-        float bgScaleHeight=height*1.0f/bgHeight;
-        float bgScaleWidth=width*1.0f/bgWidth;
-        bgMatrix.postScale(bgScaleWidth,bgScaleHeight);
-        bgBitmap=Bitmap.createBitmap(tempBgBitmap,0,0,bgWidth,bgHeight,bgMatrix,true);
 
         Bitmap titleBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.prop_title);
         int titleHeight=titleBitmap.getHeight();
@@ -375,7 +306,13 @@ public class PropModeView extends View {
 
         Paint paint=new Paint();
         paint.setAntiAlias(true);
-        canvas.drawBitmap(bgBitmap,0,0,paint);
+        //canvas.drawBitmap(bgBitmap,0,0,paint);
+        Rect rect=new Rect(0,0,width,height);
+        int[] colors=new int[]{0xFFEA8785,0xFFF7F3EA,0xFFF7F3EA,0xFFEA8785};
+        float[] positions=new float[]{0,0.15f,0.85f,1};
+        LinearGradient shader=new LinearGradient(0,0,0,height,colors,positions, Shader.TileMode.MIRROR);
+        paint.setShader(shader);
+        canvas.drawRect(rect,paint);
 
         canvas.drawBitmap(mode_title,(width-mode_title.getWidth())/2,dp2px(50),paint);
         canvas.drawBitmap(btn_pause,dp2px(30),dp2px(50)+(mode_title.getHeight()*1f)/12,paint);
@@ -383,14 +320,15 @@ public class PropModeView extends View {
         float scoreTop=dp2px(50)+mode_title.getHeight()+dp2px(20);
         //scoreToBitmap(canvas,scoreTop);
 
-        paint.setTextSize(sp2px(40));
-        paint.setColor(0xff6646e6);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
-        Paint.FontMetrics fm=paint.getFontMetrics();
+        Paint textPaint=new Paint();
+        textPaint.setTextSize(sp2px(40));
+        textPaint.setColor(0xff6646e6);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
+        Paint.FontMetrics fm=textPaint.getFontMetrics();
         float textHeight=fm.descent-fm.ascent;
         RectF textRectF=new RectF(0,0,width,scoreTop+textHeight);
-        canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,paint);
+        canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,textPaint);
 
         float cardTop=textRectF.bottom+dp2px(20);
         float chooseCardTop=cardTop+dimension*cardLength+40;

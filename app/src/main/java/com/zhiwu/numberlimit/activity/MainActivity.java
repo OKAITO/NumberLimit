@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	ImageView img7=null;
 	ImageView img8=null;
 	ImageView img9=null;
-	ImageView img10=null;
+	/*ImageView img10=null;
 	ImageView img11=null;
 	ImageView img12=null;
 	ImageView img13=null;
@@ -121,7 +121,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 	ImageView img16=null;
 	ImageView img17=null;
 	ImageView img18=null;
-	ImageView img19=null;
+	ImageView img19=null;*/
 
 
 	private Handler handler=new Handler(){
@@ -167,7 +167,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				case 9:
 					ani(way, img9, time, index);
 					break;
-				case 10:
+				/*case 10:
 					ani(way, img10, time, index);
 					break;
 				case 11:
@@ -196,7 +196,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 					break;
 				case 19:
 					ani(way, img19, time, index);
-					break;
+					break;*/
 			}
 			super.handleMessage(msg);
 		}
@@ -306,7 +306,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		getWindowManager().getDefaultDisplay().getMetrics(dm);
 		scale=dm.density;
 		Random random = new Random();
-		for (int i = 0; i<20; i++){
+		for (int i = 0; i<10; i++){
 			new Thread(new photo(relayout, i, random.nextInt(10) - 5)).start();
 		}
 
@@ -578,8 +578,8 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 		Random random = new Random();
 		int angle = random.nextInt(90) - 45;
 
-		double x = 400 * Math.sin(angle*Math.PI/180);
-		double y = -400 * Math.cos(angle*Math.PI/180);
+		double x = 500 * Math.sin(angle*Math.PI/180);
+		double y = -500 * Math.cos(angle*Math.PI/180);
 
 		ObjectAnimator ani = ObjectAnimator.ofFloat(v, "alpha", 1.0f, 0f);
 		ani.setDuration(time);
@@ -674,7 +674,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				else if (index == 9){
 					img9 = new ImageView(MainActivity.this);
 					img9.setImageDrawable(getResources().getDrawable(R.drawable.image9));
-				}else if (index == 10){
+				}/*else if (index == 10){
 					img10 = new ImageView(MainActivity.this);
 					img10.setImageDrawable(getResources().getDrawable(R.drawable.image0));
 				}
@@ -713,7 +713,7 @@ public class MainActivity extends Activity implements View.OnClickListener,Seria
 				else if (index == 19){
 					img19 = new ImageView(MainActivity.this);
 					img19.setImageDrawable(getResources().getDrawable(R.drawable.image9));
-				}
+				}*/
 
 				Message msg1 = Message.obtain();
 				Bundle bundle1 = new Bundle();

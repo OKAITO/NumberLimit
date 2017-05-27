@@ -5,9 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -246,16 +249,6 @@ public class ChallengeModeView extends View {
         bitmap20.recycle();
 
 
-        /*for(int i=0;i<tempBitmaps.size();i++){
-            int height=tempBitmaps.get(i).getHeight();
-            int width=tempBitmaps.get(i).getWidth();
-            Matrix matrix=new Matrix();
-            float scaleHeight=cardLength*1.0f/height;
-            matrix.postScale(scaleHeight,scaleHeight);
-            Bitmap newBitmap=Bitmap.createBitmap(tempBitmaps.get(i),0,0,width,height,matrix,true);
-            bitmaps.add(newBitmap);
-        }*/
-
         ArrayList<Bitmap> tempBitmaps2=new ArrayList<Bitmap>();
         Bitmap bitmap21= BitmapFactory.decodeResource(getResources(),R.drawable.proptime1);
         tempBitmaps2.add(bitmap21);
@@ -274,15 +267,6 @@ public class ChallengeModeView extends View {
             Bitmap newBitmap=Bitmap.createBitmap(tempBitmaps2.get(i),0,0,width,height,matrix,true);
             proptimeBitmaps.add(newBitmap);
         }
-
-        Bitmap tempBgBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.challenge_bg);
-        int bgHeight=tempBgBitmap.getHeight();
-        int bgWidth=tempBgBitmap.getWidth();
-        Matrix bgMatrix=new Matrix();
-        float bgScaleHeight=height*1.0f/bgHeight;
-        float bgScaleWidth=width*1.0f/bgWidth;
-        bgMatrix.postScale(bgScaleWidth,bgScaleHeight);
-        bgBitmap=Bitmap.createBitmap(tempBgBitmap,0,0,bgWidth,bgHeight,bgMatrix,true);
 
         Bitmap titleBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.challenge_title);
         int titleHeight=titleBitmap.getHeight();
@@ -338,32 +322,39 @@ public class ChallengeModeView extends View {
 
         Paint paint=new Paint();
         paint.setAntiAlias(true);
-        canvas.drawBitmap(bgBitmap,0,0,paint);
+        //canvas.drawBitmap(bgBitmap,0,0,paint);
+        Rect rect=new Rect(0,0,width,height);
+        int[] colors=new int[]{0xFFB2EAAD,0xFFF7F3EA,0xFFF7F3EA,0xFFB2EAAD};
+        float[] positions=new float[]{0,0.15f,0.85f,1};
+        LinearGradient shader=new LinearGradient(0,0,0,height,colors,positions, Shader.TileMode.MIRROR);
+        paint.setShader(shader);
+        canvas.drawRect(rect,paint);
 
         canvas.drawBitmap(mode_title,(width-mode_title.getWidth())/2,dp2px(50),paint);
         canvas.drawBitmap(btn_pause,dp2px(30),dp2px(50)+(mode_title.getHeight()*1f)/12,paint);
         //canvas.drawBitmap(clock,width-dp2px(30)-clock.getWidth(),dp2px(50)-(clock.getHeight()-mode_title.getHeight()),paint);
 
+        Paint textPaint=new Paint();
         float scoreTop=dp2px(50)+mode_title.getHeight()+dp2px(20);
         //scoreToBitmap(canvas,scoreTop);
-        paint.setTextSize(sp2px(40));
-        paint.setColor(0xff6646e6);
-        //paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
-        Paint.FontMetrics fm=paint.getFontMetrics();
+        textPaint.setTextSize(sp2px(40));
+        textPaint.setColor(0xff6646e6);
+        //textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
+        Paint.FontMetrics fm=textPaint.getFontMetrics();
         float textHeight=fm.descent-fm.ascent;
         RectF textRectF=new RectF(0,0,width-dp2px(60)-clock.getWidth(),scoreTop+textHeight);
-        //canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,paint);
-        canvas.drawText(maxnum+"/"+score,dp2px(60),textRectF.bottom-fm.descent,paint);
+        //canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,textPaint);
+        canvas.drawText(maxnum+"/"+score,dp2px(60),textRectF.bottom-fm.descent,textPaint);
 
         canvas.drawBitmap(clock,width-dp2px(60)-clock.getWidth()
                 ,textRectF.bottom+dp2px(5)-clock.getHeight(),paint);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(sp2px(30));
-        Paint.FontMetrics fm2=paint.getFontMetrics();
-        if(restStepNum>5) paint.setColor(Color.BLACK);
-        else paint.setColor(Color.RED);
-        canvas.drawText(restStepNum+"",width-dp2px(60)-clock.getWidth()/2,textRectF.bottom-fm2.descent,paint);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(sp2px(30));
+        Paint.FontMetrics fm2=textPaint.getFontMetrics();
+        if(restStepNum>5) textPaint.setColor(Color.BLACK);
+        else textPaint.setColor(Color.RED);
+        canvas.drawText(restStepNum+"",width-dp2px(60)-clock.getWidth()/2,textRectF.bottom-fm2.descent,textPaint);
 
         float cardTop=textRectF.bottom+dp2px(20);
         float chooseCardTop=cardTop+dimension*cardLength+40;

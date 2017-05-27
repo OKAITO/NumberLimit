@@ -290,11 +290,11 @@ public class RecordActivity extends Activity implements View.OnClickListener{
         challenge_avg_steps.setText(subZeroAndDot(String.valueOf(challenge_res[6])));
 
         tabHost.getTabWidget().getChildAt(0)
-                .setBackground(getResources().getDrawable(R.drawable.tab_classic));
+                .setBackgroundResource(R.drawable.tab_classic);
         tabHost.getTabWidget().getChildAt(1)
-                .setBackground(getResources().getDrawable(R.drawable.tab_prop));
+                .setBackgroundResource(R.drawable.tab_prop);
         tabHost.getTabWidget().getChildAt(2)
-                .setBackground(getResources().getDrawable(R.drawable.tab_challenge));
+                .setBackgroundResource(R.drawable.tab_challenge);
 
 //        updateTab(tabHost);
         for(int i=0;i<3;i++){

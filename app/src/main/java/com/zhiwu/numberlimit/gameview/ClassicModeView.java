@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -186,25 +189,6 @@ public class ClassicModeView extends View {
         bitmaps.add(newBitmap16);
         bitmap16.recycle();
 
-        /*for(int i=0;i<tempBitmaps.size();i++){
-            int height=tempBitmaps.get(i).getHeight();
-            int width=tempBitmaps.get(i).getWidth();
-            Matrix matrix=new Matrix();
-            float scaleHeight=cardLength*1.0f/height;
-            matrix.postScale(scaleHeight,scaleHeight);
-            Bitmap newBitmap=Bitmap.createBitmap(tempBitmaps.get(i),0,0,width,height,matrix,true);
-            bitmaps.add(newBitmap);
-        }*/
-
-        Bitmap tempBgBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.classic_bg);
-        int bgHeight=tempBgBitmap.getHeight();
-        int bgWidth=tempBgBitmap.getWidth();
-        Matrix bgMatrix=new Matrix();
-        float bgScaleHeight=height*1.0f/bgHeight;
-        float bgScaleWidth=width*1.0f/bgWidth;
-        bgMatrix.postScale(bgScaleWidth,bgScaleHeight);
-        bgBitmap=Bitmap.createBitmap(tempBgBitmap,0,0,bgWidth,bgHeight,bgMatrix,true);
-
         Bitmap titleBitmap=BitmapFactory.decodeResource(getResources(),R.drawable.classic_title);
         int titleHeight=titleBitmap.getHeight();
         int titleWidth=titleBitmap.getWidth();
@@ -248,7 +232,13 @@ public class ClassicModeView extends View {
         Paint paint=new Paint();
         paint.setAntiAlias(true);
 
-        canvas.drawBitmap(bgBitmap,0,0,paint);
+        //canvas.drawBitmap(bgBitmap,0,0,paint);
+        Rect rect=new Rect(0,0,width,height);
+        int[] colors=new int[]{0xFFA39DD2,0xFFF7F3EA,0xFFF7F3EA,0xFFA39DD2};
+        float[] positions=new float[]{0,0.15f,0.85f,1};
+        LinearGradient shader=new LinearGradient(0,0,0,height,colors,positions, Shader.TileMode.MIRROR);
+        paint.setShader(shader);
+        canvas.drawRect(rect,paint);
 
         canvas.drawBitmap(mode_title,(width-mode_title.getWidth())/2,dp2px(50),paint);
         canvas.drawBitmap(btn_pause,dp2px(30),dp2px(50)+(mode_title.getHeight()*1f)/12,paint);
@@ -256,14 +246,18 @@ public class ClassicModeView extends View {
         float scoreTop=dp2px(50)+mode_title.getHeight()+dp2px(20);
         //scoreToBitmap(canvas,scoreTop);
 
-        paint.setTextSize(sp2px(40));
-        paint.setColor(0xff6646e6);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
-        Paint.FontMetrics fm=paint.getFontMetrics();
+        Paint textPaint=new Paint();
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(sp2px(40));
+        textPaint.setColor(0xff6646e6);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTypeface(Typeface.createFromAsset(gameActivity.getAssets(),"font/BPreplay.ttf"));
+        Paint.FontMetrics fm=textPaint.getFontMetrics();
         float textHeight=fm.descent-fm.ascent;
         RectF textRectF=new RectF(0,0,width,scoreTop+textHeight);
-        canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,paint);
+        canvas.drawText(maxnum+"/"+score,textRectF.left+textRectF.width()/2,textRectF.bottom-fm.descent,textPaint);
+        System.out.println("x:"+(textRectF.left+textRectF.width()/2));
+        System.out.println("y:"+(textRectF.bottom-fm.descent));
 
         float cardTop=textRectF.bottom+dp2px(20);
         //float chooseCardTop=cardTop+dimension*20+dimension*cardLength;
